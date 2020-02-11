@@ -14,24 +14,37 @@ void process (size_t i, size_t j, size_t rows, size_t cols, char * ims, char * i
   }
 
   // create a new empty image
-  pnm new_image = pnm_new(rows, cols, PnmRawPpm);
+  pnm new_image = pnm_new(cols, rows, PnmRawPpm);
   
+  int imagen_cols = pnm_get_width(new_image);
+  int imagen_rows = pnm_get_height(new_image);
+  
+  printf("cols = %d and rows = %d\n", imagen_cols, imagen_rows);
+
   // get size of source image
   int image_cols = pnm_get_width(image);
   int image_rows = pnm_get_height(image);
 
+  printf("cols = %d and rows = %d\n", image_cols, image_rows);
   
   for (size_t i0 = i ; i0 < rows + i ; i0++) {
 
-    for (size_t j0 = j ; j0 < cols + j; j0++) {
+    size_t i1 = i0 - i;
+
+    for (size_t j0 = j ; j0 < cols + j ; j0++) {
+      
+      size_t j1 = j0 - j;
 
       for (size_t k = 0 ; k < 3 ; k++) {
-
-	if ((int) i0 <= image_rows && (int) j0 <= image_cols) { // check if the actual pixel is in the source image frame
-	  pnm_set_component(new_image, i0-i, j0-j, k, pnm_get_component(image, i0, j0, k)); // copy the pixel value form source to destination
+  
+	if ((int) i0 < image_rows && (int) j0 < image_cols) { // check if the actual pixel is in the source image frame
+	  printf("i0 = %zd\n", i0);
+	  printf("j0 = %zd\n", j0);
+	  printf("i1 = %zd and j1 = %zd\n", i1, j1);
+	  pnm_set_component(new_image, i1, j1, k, pnm_get_component(image, i0, j0, k)); // copy the pixel value form source to destination
 	} 
 	else
-	  pnm_set_component(new_image, i0-i, j0-j, k, pnm_maxval); // set to white if not in frame
+	  pnm_set_component(new_image, i1, j1, k, pnm_maxval); // set to white if not in frame
 
       }
     }
