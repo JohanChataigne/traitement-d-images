@@ -16,16 +16,25 @@ void process (size_t i, size_t j, size_t rows, size_t cols, char * ims, char * i
   // create a new empty image
   pnm new_image = pnm_new(rows, cols, PnmRawPpm);
   
-  // get both images buffers
-  unsigned short * old_data = pnm_get_image(image);
-  unsigned short * new_data = pnm_get_image(new_image);
+  // get size of source image
+  int image_cols = pnm_get_width(image);
+  int image_rows = pnm_get_height(image);
 
-  int i0 = pnm_offset(image, i, j);
+  
+  for (size_t i0 = i ; i0 < rows + i ; i0++) {
 
-  for (size_t k = i0 ; k < (i+rows)*(j+cols)*3 ; k++) {
- 
-    *new_data++ = old_data[k];
-      
+    for (size_t j0 = j ; j0 < cols + j; j0++) {
+
+      for (size_t k = 0 ; k < 3 ; k++) {
+
+	if ((int) i0 <= image_rows && (int) j0 <= image_cols) { // check if the actual pixel is in the source image frame
+	  pnm_set_component(new_image, i0-i, j0-j, k, pnm_get_component(image, i0, j0, k)); // copy the pixel value form source to destination
+	} 
+	else
+	  pnm_set_component(new_image, i0-i, j0-j, k, pnm_maxval); // set to white if not in frame
+
+      }
+    }
   }
 
   // save image in file
