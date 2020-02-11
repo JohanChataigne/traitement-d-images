@@ -9,7 +9,9 @@ BIN=\
 	test-bcl\
 	extract-subimage\
 	extract-channel\
-	gray2color
+	gray2color\
+	color2mean\
+	normalize
 
 .PHONY: all
 all:$(BIN)
