@@ -22,8 +22,8 @@ process(int dx, int dy, char* ims_name, char* imd_name)
   pnm new_image = pnm_new(image_cols, image_rows, PnmRawPpm);
 
   // process move
-  for (size_t i = 0; i < image_rows - dy; i++) {
-    for (size_t j = 0; j < image_cols - dx; j++) {
+  for (size_t i = 0; i < (size_t) image_rows - dy; i++) {
+    for (size_t j = 0; j < (size_t) image_cols - dx; j++) {
       for (size_t k = 0 ; k < 3 ; k++) {
 
         // if the pixel (i,j) is in the "translated area", sets the channel k of the pixel (i,j) to 0
@@ -38,7 +38,7 @@ process(int dx, int dy, char* ims_name, char* imd_name)
   }
 
   // save image in file
-  pnm_save(new_image, PnmRawPpm, imd);
+  pnm_save(new_image, PnmRawPpm, imd_name);
 
   // free structures
   pnm_free(image);
