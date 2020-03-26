@@ -51,11 +51,11 @@ unsigned short * channel_buffer = pnm_get_channel(image, NULL, channel);
 
 }
  
-int normalize(pnm image, int i, int j, int min, int max, int min_image, int max_image, int channel) {
+float normalize(pnm image, int i, int j, int min, int max, int min_image, int max_image, int channel) {
 
   unsigned short pixel_value = pnm_get_component(image, i, j, channel);
   
-  return ((max - min) / (max_image - min_image)) * pixel_value + ((min * max_image - max * min_image) / (max_image - min_image));
+  return (1.0 * (max - min) / (max_image - min_image)) * pixel_value + (1.0 * (min * max_image - max * min_image) / (max_image - min_image));
 }
 
 void process (int min , int max, char * ims, char * imd) {
