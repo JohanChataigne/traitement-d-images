@@ -11,7 +11,7 @@ process(int dx, int dy, char* ims_name, char* imd_name)
         fprintf(stderr, "Error: couldn't load image\n");
         exit(1);
     }
-    
+
     int cols = pnm_get_width(image);
     int rows = pnm_get_height(image);
 

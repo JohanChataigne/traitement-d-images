@@ -7,6 +7,7 @@ LDLIBS = -lbcl
 OBJ = domain.o
 BIN = \
 	move\
+	flip\
 	shear\
 	scroll
 
