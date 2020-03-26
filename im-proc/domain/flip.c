@@ -42,6 +42,7 @@ flip (char dir, pnm image) {
             break;
         default:
             fprintf(stderr, "Error invalid direction\n");
+            exit(1);
             break;
     }
 
@@ -72,7 +73,7 @@ process(char* dirs, char* ims_name, char* imd_name)
 void
 usage(char* s)
 {
-  fprintf(stderr,"%s <dir> <ims> <imd>\n",s);
+  fprintf(stderr,"%s <dir>{h, t, v}* <ims> <imd>\n",s);
   exit(EXIT_FAILURE);
 }
 
