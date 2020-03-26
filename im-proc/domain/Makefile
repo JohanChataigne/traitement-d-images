@@ -7,7 +7,12 @@ LDLIBS = -lbcl
 OBJ = domain.o
 BIN = \
 	move\
+<<<<<<< HEAD
 	shear
+=======
+	shear\
+	scroll
+>>>>>>> c7ba4240653416de66f6c51e10120c1a899db38d
 
 all: $(BIN)
 
