@@ -7,57 +7,89 @@
 #define M_PI 3.14159265358979323846
 
 void
-process(char* dir, int angle, char* ims, char* imd){
+process(char* dir, double angle, char* ims, char* imd){
 
     pnm image = pnm_load(ims);
     pnm new_image;
     int new_cols, new_rows;
 
+    int angle_negative = (angle < 0);
     int cols = pnm_get_width(image);
     int rows = pnm_get_height(image);
 
     switch(dir[0]) {
         case 'h':
 
-            new_cols = cols + rows * tan(abs(angle)); //width of the new image
+            new_cols = cols + rows * tan(fabs(angle)); //width of the new image
             new_image = pnm_new(new_cols, rows, PnmRawPpm);
 
             /* iterate on the new image */
             for (size_t i = 0 ; i < (size_t) rows ; i++) {
                 int j0 = 0; //cursor for culumns in the source image
                 for (size_t j = 0 ; j < (size_t) new_cols ; j++) {
-                    if ((j < i * tan(angle)) || (j > i * tan(angle) + cols)) { //check if the pixel is in one of the black triangles
-                        for(int c = 0 ; c < 3; c++) {
-                            pnm_set_component(new_image, i, j, c, 0);
+
+                    if (angle_negative) {
+                        if ((j < i * tan(angle) + rows * tan(fabs(angle)))
+                            || (j >= i * tan(angle) + rows * tan(fabs(angle)) + cols)) { //check if the pixel is in one of the black triangles
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, 0);
+                            }
+                        } else {
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, pnm_get_component(image, i, j0, c));
+                            }
+                            j0++; //incremented only if we pick a pick a pixel in the source image
                         }
                     } else {
-                        for(int c = 0 ; c < 3; c++) {
-                            pnm_set_component(new_image, i, j, c, pnm_get_component(image, i, j0, c));
+                        if ((j < i * tan(angle)) || (j >= i * tan(angle) + cols)) { //check if the pixel is in one of the black triangles
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, 0);
+                            }
+                        } else {
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, pnm_get_component(image, i, j0, c));
+                            }
+                            j0++; //incremented only if we pick a pick a pixel in the source image
                         }
-                        j0++; //incremented only if we pick a pick a pixel in the source image
                     }
+
                 }
             }
 
             break;
         case 'v':
 
-            new_rows = rows + cols * tan(abs(angle)); //height of the new image
+            new_rows = rows + cols * tan(fabs(angle)); //height of the new image
             new_image = pnm_new(cols, new_rows, PnmRawPpm);
 
             /* iterate on the new image */
             for (size_t j = 0 ; j < (size_t) cols ; j++) {
                 int i0 = 0; //cursor for culumns in the source image
                 for (size_t i = 0 ; i < (size_t) new_rows ; i++) {
-                    if ((i < j * tan(angle)) || (i > j * tan(angle) + rows)) { //check if the pixel is in one of the black triangles
-                        for(int c = 0 ; c < 3; c++) {
-                            pnm_set_component(new_image, i, j, c, 0);
+
+                    if(angle_negative) {
+                        if ((i < j * tan(angle) + cols * tan(fabs(angle)))
+                            || (i >= j * tan(angle) + cols * tan(fabs(angle)) + rows)) { //check if the pixel is in one of the black triangles
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, 0);
+                            }
+                        } else {
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, pnm_get_component(image, i0, j, c));
+                            }
+                            i0++; //incremented only if we pick a pick a pixel in the source image
                         }
                     } else {
-                        for(int c = 0 ; c < 3; c++) {
-                            pnm_set_component(new_image, i, j, c, pnm_get_component(image, i0, j, c));
+                        if ((i < j * tan(angle)) || (i >= j * tan(angle) + rows)) { //check if the pixel is in one of the black triangles
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, 0);
+                            }
+                        } else {
+                            for(int c = 0 ; c < 3; c++) {
+                                pnm_set_component(new_image, i, j, c, pnm_get_component(image, i0, j, c));
+                            }
+                            i0++; //incremented only if we pick a pick a pixel in the source image
                         }
-                        i0++; //incremented only if we pick a pick a pixel in the source image
                     }
                 }
             }
@@ -86,7 +118,7 @@ int main(int argc, char* argv[]){
     if(argc != PARAM+1 || strlen(argv[1]) != 1)
         usage(argv[0]);
 
-    process(argv[1], atoi(argv[2]) * M_PI / 180, argv[3], argv[4]);
+    process(argv[1], atof(argv[2]) * M_PI / 180., argv[3], argv[4]);
 
     return EXIT_SUCCESS;
 }

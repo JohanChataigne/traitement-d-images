@@ -35,7 +35,7 @@ flip (char dir, pnm image) {
             for (size_t i = 0 ; i < (size_t) rows ; i++) {
                 for (size_t j = 0 ; j < (size_t) cols ; j++) {
                     for(size_t c = 0 ; c < 3 ; c++) {
-                        pnm_set_component(image, cols - 1 - j, rows - 1 - i, c, pnm_get_component(copy, i, j, c));
+                        pnm_set_component(image, cols - 1 - j, i, c, pnm_get_component(copy, i, j, c));
                     }
                 }
             }

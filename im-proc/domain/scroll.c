@@ -20,7 +20,7 @@ process(int dx, int dy, char* ims_name, char* imd_name)
     for (size_t i = 0 ; i < (size_t) rows ; i++) {
         for (size_t j = 0 ; j < (size_t) cols ; j++) {
             for(size_t c = 0 ; c < 3 ; c++) {
-                pnm_set_component(new_image, (i + rows - dy) % rows , (j + cols - dx) % cols, c, pnm_get_component(image, i, j, c));
+                pnm_set_component(new_image, (i + rows + dy) % rows , (j + cols + dx) % cols, c, pnm_get_component(image, i, j, c));
             }
         }
     }
