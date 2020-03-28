@@ -12,8 +12,7 @@ process(int tx, int ax, int ty, int ay, char* ims, char* imd){
     pnm image = pnm_load(ims);
     int cols = pnm_get_width(image);
     int rows = pnm_get_height(image);
-    pnm new_image1 = pnm_new(cols, rows, PnmRawPpm);
-    pnm new_image2 = pnm_new(cols, rows, PnmRawPpm);
+    pnm new_image = pnm_new(cols, rows, PnmRawPpm);
 
     double wx = 2*M_PI / tx;
     double wy = 2*M_PI / ty;
@@ -24,16 +23,15 @@ process(int tx, int ax, int ty, int ay, char* ims, char* imd){
             double sin_j = ay * cos(wy * j + M_PI/2);
                 for(int c = 0 ; c < 3 ; c++) {
                   if(j - sin_i >= 0 && j - sin_i < cols && i - sin_j >= 0 && i - sin_j < cols) {
-                      pnm_set_component(new_image1, i, j, c, pnm_get_component(image, i - sin_j, j - sin_i, c));
+                      pnm_set_component(new_image, i, j, c, pnm_get_component(image, i - sin_j, j - sin_i, c));
                   }
                 }
         }
     }
 
-    pnm_save(new_image1, PnmRawPpm, imd);
+    pnm_save(new_image, PnmRawPpm, imd);
     pnm_free(image);
-    pnm_free(new_image1);
-    pnm_free(new_image2);
+    pnm_free(new_image);
 
 }
 
