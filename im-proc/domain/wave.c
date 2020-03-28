@@ -2,6 +2,7 @@
 #include <math.h>
 #include <bcl.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define M_PI 3.14159265358979323846
 
@@ -18,28 +19,18 @@ process(int tx, int ax, int ty, int ay, char* ims, char* imd){
     double wy = 2*M_PI / ty;
 
     for(int i = 0 ; i < rows ; i++) {
-        double sin_i = ax * sin(wx * i)
+        double sin_i = ax * cos(wx * i + M_PI/2);
         for (int j = 0 ; j < cols ; j++) {
+            double sin_j = ay * cos(wy * j + M_PI/2);
                 for(int c = 0 ; c < 3 ; c++) {
-                  if(j + sin_i >= 0 && j + sin_i <= cols) {
-                      pnm_set_component(new_image1, i, j + sin_i, c, pnm_get_component(image, i, j, c));
+                  if(j - sin_i >= 0 && j - sin_i < cols && i - sin_j >= 0 && i - sin_j < cols) {
+                      pnm_set_component(new_image1, i, j, c, pnm_get_component(image, i - sin_j, j - sin_i, c));
                   }
                 }
         }
     }
 
-    for(int j = 0 ; j < cols ; j++) {
-        double sin_j = ay * sin(wy * j)
-        for (int i = 0 ; i < rows ; i++) {
-                for(int c = 0 ; c < 3 ; c++) {
-                  if(i + sin_j >= 0 && i + sin_j <= cols) {
-                      pnm_set_component(new_image2, i + sin_j, i, c, pnm_get_component(new_image1, i, j, c));
-                  }
-                }
-        }
-    }
-
-    pnm_save(new_image2, PnmRawPpm, imd);
+    pnm_save(new_image1, PnmRawPpm, imd);
     pnm_free(image);
     pnm_free(new_image1);
     pnm_free(new_image2);

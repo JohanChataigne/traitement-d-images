@@ -53,6 +53,6 @@ test: $(BIN)
 	$(ROTATE) 128 64 -30 $(LENA) rotate128_64_-30.ppm
 	$(WAVE) 120 10 250 15 $(LENA) wave120_10_250_15.ppm
 	$(WAVE) 128 20 1 1 $(LENA) wave128_20_1_1.ppm
-	$(WAVE) 1 1 128 20 $(LENA) wave128_1_1_128_20.ppm
+	$(WAVE) 1 1 128 20 $(LENA) wave1_1_128_20.ppm
 
 .PHONY: all clean test

@@ -27,7 +27,7 @@ process(int x0, int y0, double angle, char* ims, char* imd){
                     int x_prime = x * cos_angle - y * sin_angle + x0;
                     int y_prime = x * sin_angle + y * cos_angle + y0;
 
-                    if( y_prime >= 0 && y_prime < rows && x_prime >= 0 && x_prime < cols ) { /
+                    if( y_prime >= 0 && y_prime < rows && x_prime >= 0 && x_prime < cols ) { // only set pixel if in the image frame
                         pnm_set_component(new_image, i, j, c, pnm_get_component(image, y_prime, x_prime, c));
                     }
                 }
