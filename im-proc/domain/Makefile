@@ -9,6 +9,7 @@ SCROLL = ./scroll
 FLIP = ./flip
 SHEAR = ./shear
 ROTATE = ./rotate
+WAVE = ./wave
 
 LENA = ../data/lena-color.ppm
 
@@ -18,7 +19,8 @@ BIN = \
 	flip\
 	shear\
 	scroll\
-	rotate
+	rotate\
+	wave
 
 
 all: $(BIN)
@@ -49,5 +51,8 @@ test: $(BIN)
 	$(ROTATE) 0 0 -50 $(LENA) rotate0_0_-50.ppm
 	$(ROTATE) 50 50 -50 $(LENA) rotate50_50_-50.ppm
 	$(ROTATE) 128 64 -30 $(LENA) rotate128_64_-30.ppm
+	$(WAVE) 120 10 250 15 $(LENA) wave120_10_250_15.ppm
+	$(WAVE) 128 20 1 1 $(LENA) wave128_20_1_1.ppm
+	$(WAVE) 1 1 128 20 $(LENA) wave128_1_1_128_20.ppm
 
 .PHONY: all clean test
