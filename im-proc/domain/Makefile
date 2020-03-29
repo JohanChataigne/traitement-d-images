@@ -57,5 +57,6 @@ test: $(BIN)
 	$(WAVE) 128 20 1 1 $(LENA) wave128_20_1_1.ppm
 	$(WAVE) 1 1 128 20 $(LENA) wave1_1_128_20.ppm
 	$(SPHERE) $(LENA) sphere.ppm
+	$(SPHERE) ../data/ocean.ppm sphere-ocean.ppm
 
 .PHONY: all clean test

@@ -14,13 +14,19 @@ process(int tx, int ax, int ty, int ay, char* ims, char* imd){
     int rows = pnm_get_height(image);
     pnm new_image = pnm_new(cols, rows, PnmRawPpm);
 
+    // pulsations des sinusoides (tx / ty sont les périodes)
     double wx = 2*M_PI / tx;
     double wy = 2*M_PI / ty;
 
+    // transformation effet vague
     for(int i = 0 ; i < rows ; i++) {
+        //sinusoide horizontale
         double sin_i = ax * cos(wx * i + M_PI/2);
+
         for (int j = 0 ; j < cols ; j++) {
+            // sinusoide verticale
             double sin_j = ay * cos(wy * j + M_PI/2);
+            
                 for(int c = 0 ; c < 3 ; c++) {
                   if(j - sin_i >= 0 && j - sin_i < cols && i - sin_j >= 0 && i - sin_j < cols) {
                       pnm_set_component(new_image, i, j, c, pnm_get_component(image, i - sin_j, j - sin_i, c));
