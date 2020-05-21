@@ -82,7 +82,7 @@ pnm rgb_to_lms_transform(pnm RGB_image) {
     for(int i = 0 ; i < rows ; i++) {
         for (int j = 0 ; j < cols ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
-            	printf("%f\n", log10f(rgb_to_lms_val(RGB_image, i, j, c)));
+            	//printf("%f\n", log10f(rgb_to_lms_val(RGB_image, i, j, c)));
                 /* Fill LMS image pixels computed with transform matrix and apply log */
                 pnm_set_component(LMS_image, i, j, c, log10f(rgb_to_lms_val(RGB_image, i, j, c)));
             }
@@ -202,27 +202,27 @@ process(char *ims, char *imt, char* imd){
     /* Compute mean + standard deviation for each axis of each image */
 
     float mean_source[D] = {
-                             axis_mean(image_source, 0),
-                             axis_mean(image_source, 1),
-                             axis_mean(image_source, 2)
+                             axis_mean(lab_source, 0),
+                             axis_mean(lab_source, 1),
+                             axis_mean(lab_source, 2)
                            };
 
     float mean_target[D] = {
-                               axis_mean(image_target, 0),
-                               axis_mean(image_target, 1),
-                               axis_mean(image_target, 2)
+                               axis_mean(lab_target, 0),
+                               axis_mean(lab_target, 1),
+                               axis_mean(lab_target, 2)
                              };
 
     float sigma_source[D] = {
-                             axis_standard_deviation(image_source, 0, mean_source[0]),
-                             axis_standard_deviation(image_source, 1, mean_source[1]),
-                             axis_standard_deviation(image_source, 2, mean_source[2])
+                             axis_standard_deviation(lab_source, 0, mean_source[0]),
+                             axis_standard_deviation(lab_source, 1, mean_source[1]),
+                             axis_standard_deviation(lab_source, 2, mean_source[2])
                             };
 
     float sigma_target[D] = {
-                                axis_standard_deviation(image_target, 0, mean_target[0]),
-                                axis_standard_deviation(image_target, 1, mean_target[1]),
-                                axis_standard_deviation(image_target, 2, mean_target[2])
+                                axis_standard_deviation(lab_target, 0, mean_target[0]),
+                                axis_standard_deviation(lab_target, 1, mean_target[1]),
+                                axis_standard_deviation(lab_target, 2, mean_target[2])
                               };
 
     /* Color processing */
