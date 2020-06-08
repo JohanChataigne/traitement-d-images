@@ -1,9 +1,9 @@
 /**
  * @file color-transfert
  * @brief transfert color from source image to target image.
- *        Method from Reinhard et al. : 
- *        Erik Reinhard, Michael Ashikhmin, Bruce Gooch and Peter Shirley, 
- *        'Color Transfer between Images', IEEE CGA special issue on 
+ *        Method from Reinhard et al. :
+ *        Erik Reinhard, Michael Ashikhmin, Bruce Gooch and Peter Shirley,
+ *        'Color Transfer between Images', IEEE CGA special issue on
  *        Applied Perception, Vol 21, No 5, pp 34-41, September - October 2001
  */
 
@@ -18,8 +18,8 @@
 #define D 3
 
 float RGB2LMS[D][D] = {
-  {0.3811, 0.5783, 0.0402}, 
-  {0.1967, 0.7244, 0.0782},  
+  {0.3811, 0.5783, 0.0402},
+  {0.1967, 0.7244, 0.0782},
   {0.0241, 0.1288, 0.8444}
 };
 
@@ -44,33 +44,45 @@ float LMS2RGB[D][D] = {
 /* compute RGB to LMS transform for a pixel in a given channel in LMS space */
 float
 rgb_to_lms_val(pnm image, int row, int col, pnmChannel c) {
-    return RGB2LMS[c][0] * pnm_get_component(image, row, col, 0)
-            + RGB2LMS[c][1] * pnm_get_component(image, row, col, 1)
-            + RGB2LMS[c][2] * pnm_get_component(image, row, col, 2);
+
+	float val = RGB2LMS[c][0] * pnm_get_component(image, row, col, 0)
+			+ RGB2LMS[c][1] * pnm_get_component(image, row, col, 1)
+			+ RGB2LMS[c][2] * pnm_get_component(image, row, col, 2);
+
+    return val;
 }
 
 /* compute LMS to lab transform for a pixel in a given channel in lab space */
 float
 lms_to_lab_val(float * image, int width, int row, int col, pnmChannel c) {
-    return LMS2lab[c][0] * image[3*(row * width + col)]
+
+    float val = LMS2lab[c][0] * image[3*(row * width + col)]
             + LMS2lab[c][1] * image[3*(row * width + col) + 1]
             + LMS2lab[c][2] * image[3*(row * width + col) + 2];
+
+	return val;
 }
 
 /* compute lab to LMS transform for a pixel in a given channel in LMS space */
 float
 lab_to_lms_val(float * image, int width, int row, int col, pnmChannel c) {
-    return lab2LMS[c][0] * image[3*(row * width + col)]
+
+     float val = lab2LMS[c][0] * image[3*(row * width + col)]
             + lab2LMS[c][1] * image[3*(row * width + col) + 1]
             + lab2LMS[c][2] * image[3*(row * width + col) + 2];
+
+	return val;
 }
 
 /* compute LMS to RGB transform for a pixel in a given channel in RGB space */
 float
 lms_to_rgb_val(float * image, int width, int row, int col, pnmChannel c) {
-    return LMS2RGB[c][0] * image[3*(row * width + col)]
+
+    float val =  LMS2RGB[c][0] * image[3*(row * width + col)]
             + LMS2RGB[c][1] * image[3*(row * width + col) + 1]
             + LMS2RGB[c][2] * image[3*(row * width + col) + 2];
+
+	return val;
 }
 
 /* Compute RGB to LMS transform for a whole given image and return the new image in LMS space */
@@ -78,15 +90,22 @@ float * rgb_to_lms_transform(pnm RGB_image) {
 
     int rows = pnm_get_height(RGB_image);
     int cols = pnm_get_width(RGB_image);
-    //pnm LMS_image = pnm_new(cols, rows, PnmRawPpm);
     float * LMS_image = malloc(rows * cols * 3 * sizeof(float));
 
     for(int i = 0 ; i < rows ; i++) {
         for (int j = 0 ; j < cols ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
-                /* Fill LMS image pixels computed with transform matrix and apply log */
-                //pnm_set_component(LMS_image, i, j, c, log10f(rgb_to_lms_val(RGB_image, i, j, c)));
-                LMS_image[3*(i * cols + j) + c] = log10f(rgb_to_lms_val(RGB_image, i, j, c));
+
+                /* Fill LMS image pixels computed with transform matrix and apply log if possible*/
+				float val = rgb_to_lms_val(RGB_image, i, j, c);
+                float val_log = log10f(val);
+
+				/* Avoid 0 value channels to create infinite values */
+				if (val > 0) {
+					LMS_image[3*(i * cols + j) + c] = val_log;
+				} else {
+					LMS_image[3*(i * cols + j) + c] = val;
+				}
             }
         }
     }
@@ -97,16 +116,12 @@ float * rgb_to_lms_transform(pnm RGB_image) {
 /* Compute LMS to lab transform for a whole given image and return the new image in lab space */
 float * lms_to_lab_transform(float * LMS_image, int rows, int cols) {
 
-    //int rows = pnm_get_height(LMS_image);
-    //int cols = pnm_get_width(LMS_image);
-    //pnm lab_image = pnm_new(cols, rows, PnmRawPpm);
     float * lab_image = malloc(rows * cols * 3 * sizeof(float));
 
     for(int i = 0 ; i < rows ; i++) {
         for (int j = 0 ; j < cols ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
                 /* Fill lab image pixels computed with transform matrix */
-                //pnm_set_component(lab_image, i, j, c, lms_to_lab_val(LMS_image, i, j, c));
                 lab_image[3*(i * cols + j) + c] = lms_to_lab_val(LMS_image, cols, i, j, c);
             }
         }
@@ -118,16 +133,12 @@ float * lms_to_lab_transform(float * LMS_image, int rows, int cols) {
 /* Compute lab to LMS transform for a whole given image and return the new image in LMS space */
 float * lab_to_lms_transform(float * lab_image, int rows, int cols) {
 
-    //int rows = pnm_get_height(lab_image);
-    //int cols = pnm_get_width(lab_image);
-    //pnm LMS_image = pnm_new(cols, rows, PnmRawPpm);
 	float * LMS_image = malloc(rows * cols * 3 * sizeof(float));
 
     for(int i = 0 ; i < rows ; i++) {
         for (int j = 0 ; j < cols ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
                 /* Fill LMS image pixels computed with transform matrix */
-                //pnm_set_component(LMS_image, i, j, c, powf(10, lab_to_lms_val(lab_image, i, j, c)));
                 LMS_image[3*(i * cols + j) + c] = powf(10, lab_to_lms_val(lab_image, cols, i, j, c));
             }
         }
@@ -139,8 +150,6 @@ float * lab_to_lms_transform(float * lab_image, int rows, int cols) {
 /* Compute LMS to RGB transform for a whole given image and return the new image in RGB space */
 pnm lms_to_rgb_transform(float * LMS_image, int rows, int cols) {
 
-    //int rows = pnm_get_height(LMS_image);
-    //int cols = pnm_get_width(LMS_image);
     pnm RGB_image = pnm_new(cols, rows, PnmRawPpm);
 
     for(int i = 0 ; i < rows ; i++) {
@@ -157,38 +166,34 @@ pnm lms_to_rgb_transform(float * LMS_image, int rows, int cols) {
 
 float axis_mean(float * image, int rows, int cols, pnmChannel c) {
 
-    //int rows = pnm_get_height(image);
-    //int cols = pnm_get_width(image);
     int size = rows * cols * 3;
-
-    //unsigned short * buffer = pnm_get_channel(image, NULL, c);
     float mean = 0;
 
     for (int i = c ; i < size ; i += 3) {
         mean += image[i];
     }
 
-	//free(buffer);
-
     return mean / size;
 }
 
 float axis_standard_deviation(float * image, int rows, int cols, pnmChannel c, float mean) {
 
-    //int rows = pnm_get_height(image);
-    //int cols = pnm_get_width(image);
     int size = rows * cols * 3;
-
-    //unsigned short * buffer = pnm_get_channel(image, NULL, c);
     float sum = 0;
 
     for (int i = c ; i < size ; i += 3) {
         sum += powf(image[i] - mean, 2);
     }
 
-    //free(buffer);
+    return sqrt(sum / (size - 1));
+}
 
-    return sqrt(sum / (float)(size - 1));
+void print_array(float array[D]) {
+
+	for (int i = 0 ; i < D ; i++) {
+			printf("%f ", array[i]);
+	}
+	printf("\n");
 }
 
 void
@@ -202,7 +207,6 @@ process(char *ims, char *imt, char* imd){
     int cols_source = pnm_get_width(image_source);
     int rows_target = pnm_get_height(image_target);
     int cols_target = pnm_get_width(image_target);
-
 
     /* RGB to LMS transformation for both images */
     float * LMS_source = rgb_to_lms_transform(image_source);
@@ -240,6 +244,11 @@ process(char *ims, char *imt, char* imd){
 
     /* Color processing */
 
+	print_array(mean_source);
+	print_array(mean_target);
+	print_array(sigma_source);
+	print_array(sigma_target);
+
     for(int i = 0 ; i < rows_target ; i++) {
         for (int j = 0 ; j < cols_target ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
@@ -258,13 +267,6 @@ process(char *ims, char *imt, char* imd){
 
     /* save result on disk */
     pnm_save(new_image, PnmRawPpm, imd);
-
-    /*pnm_save(LMS_source, PnmRawPpm, "_lms_source.ppm");
-    pnm_save(LMS_target, PnmRawPpm, "_lms_target.ppm");
-    pnm_save(lab_source, PnmRawPpm, "_lab_source.ppm");
-    pnm_save(lab_target, PnmRawPpm, "_lab_target.ppm");
-    pnm_save(LMS_new_image, PnmRawPpm, "_lms_new_image.ppm");*/
-
 
     /* Free all pnm images created */
     pnm_free(image_source);
