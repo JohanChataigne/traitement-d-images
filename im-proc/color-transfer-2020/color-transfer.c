@@ -56,9 +56,9 @@ rgb_to_lms_val(pnm image, int row, int col, pnmChannel c) {
 float
 lms_to_lab_val(float * image, int width, int row, int col, pnmChannel c) {
 
-    float val = LMS2lab[c][0] * image[3*(row * width + col)]
-            + LMS2lab[c][1] * image[3*(row * width + col) + 1]
-            + LMS2lab[c][2] * image[3*(row * width + col) + 2];
+	float val = LMS2lab[c][0] * image[3*(row * width + col)]
+    			+ LMS2lab[c][1] * image[3*(row * width + col) + 1]
+    			+ LMS2lab[c][2] * image[3*(row * width + col) + 2];
 
 	return val;
 }
@@ -67,9 +67,9 @@ lms_to_lab_val(float * image, int width, int row, int col, pnmChannel c) {
 float
 lab_to_lms_val(float * image, int width, int row, int col, pnmChannel c) {
 
-     float val = lab2LMS[c][0] * image[3*(row * width + col)]
-            + lab2LMS[c][1] * image[3*(row * width + col) + 1]
-            + lab2LMS[c][2] * image[3*(row * width + col) + 2];
+	float val = lab2LMS[c][0] * image[3*(row * width + col)]
+			+ lab2LMS[c][1] * image[3*(row * width + col) + 1]
+			+ lab2LMS[c][2] * image[3*(row * width + col) + 2];
 
 	return val;
 }
@@ -139,7 +139,7 @@ float * lab_to_lms_transform(float * lab_image, int rows, int cols) {
         for (int j = 0 ; j < cols ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
                 /* Fill LMS image pixels computed with transform matrix */
-                LMS_image[3*(i * cols + j) + c] = powf(10, lab_to_lms_val(lab_image, cols, i, j, c));
+				LMS_image[3*(i * cols + j) + c] = powf(10, lab_to_lms_val(lab_image, cols, i, j, c));
             }
         }
     }
@@ -166,26 +166,28 @@ pnm lms_to_rgb_transform(float * LMS_image, int rows, int cols) {
 
 float axis_mean(float * image, int rows, int cols, pnmChannel c) {
 
-    int size = rows * cols * 3;
+	int len = rows * cols;
+    int size = len * 3;
     float mean = 0;
 
     for (int i = c ; i < size ; i += 3) {
         mean += image[i];
     }
 
-    return mean / size;
+    return mean / len;
 }
 
 float axis_standard_deviation(float * image, int rows, int cols, pnmChannel c, float mean) {
 
-    int size = rows * cols * 3;
+	int len = rows * cols;
+    int size = len * 3;
     float sum = 0;
 
     for (int i = c ; i < size ; i += 3) {
         sum += powf(image[i] - mean, 2);
     }
 
-    return sqrt(sum / (size - 1));
+    return sqrt(sum / len);
 }
 
 void print_array(float array[D]) {
@@ -243,17 +245,11 @@ process(char *ims, char *imt, char* imd){
                               };
 
     /* Color processing */
-
-	print_array(mean_source);
-	print_array(mean_target);
-	print_array(sigma_source);
-	print_array(sigma_target);
-
     for(int i = 0 ; i < rows_target ; i++) {
         for (int j = 0 ; j < cols_target ; j++) {
             for(int c = 0 ; c < 3 ; c++) {
                 /* process color of the pixel */
-                float new_value = (sigma_target[c] / sigma_source[c]) * (lab_target[3*(i * cols_target + j) + c] - mean_target[c]) + mean_source[c];
+                float new_value = (sigma_source[c] / sigma_target[c]) * (lab_target[3*(i * cols_target + j) + c] - mean_target[c]) + mean_source[c];
                 lab_target[3*(i * cols_target + j) + c] = new_value;
             }
         }
